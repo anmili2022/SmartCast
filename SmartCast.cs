@@ -424,10 +424,13 @@ namespace SmartCast
 
             {
                 if (config.MoveToCameraDirection && actionId is
-                                                     24401 or 27817 //Hell's Ingress
+                                                      24401 or 27817 //Hell's Ingress
                                                      or 24402 or 27818  //Hell's Egress
                                                      or 16010 or 17764 //En Avant
                                                      or 94 or 8803 //Elusive Jump
+                                                     or 29494 //回避跳跃
+                                                     or 29550 //地狱入境
+                                                     or 29430 //前冲步
                                                  && CanCast(actionId, 1, 0xE000_0000)
                    )
                 {
