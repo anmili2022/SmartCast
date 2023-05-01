@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Numerics;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using Dalamud.Interface;
 using Dalamud.Interface.Colors;
 using ImGuiNET;
@@ -37,21 +38,24 @@ namespace SmartCast
 						(plugin.config.EnableSmartCast && HelpCheckbox(cn ? "非玩家技能智能施法" : "Use smart cast for non-player ground target actions", cn ? "为非玩家地面目标技能（如坐骑技能、机甲技能、炮击等）使用智能施法。" : "Use smart cast for non-player ground target actions (such as mount actions, war machina actions, cannonfire, etc.).", ref plugin.config.GroundTargetSmartCastForNonPlayerSpell)) |
 
                         (plugin.config.EnableSmartCast && HelpCheckbox(cn ? "目标技能智能施法" : "Enable mouseover smart cast", cn ? "对大多数治疗/辅助技能启用鼠标悬停施法。" : "Enable mouseover cast for most healing/support skills.", ref plugin.config.MouseOverFriendly)) |
+						(plugin.config.EnableSmartCast && plugin.config.MouseOverFriendly && HelpCheckbox(cn ? "模型悬停施法" :"Field Mouseover SmartCast","",ref plugin.config.FieldMouseOver))|
+						(plugin.config.EnableSmartCast && plugin.config.MouseOverFriendly && HelpCheckbox(cn ? "UI悬停施法" : "UI Mouseover SmartCast", "", ref plugin.config.UiMouseOver)) |
 
 						HelpCheckbox(cn ? "按下技能时下坐骑" : "Auto dismount when using action", cn ? "在骑乘状态按下任一战斗技能时自动下坐骑，不使用按下的技能。" : "Dismount when using any battle action.", ref plugin.config.AutoDismount) |
 						(plugin.config.AutoDismount && HelpCheckbox(cn ? "下坐骑并使用技能" : "Dismount and do action", cn ? "下坐骑并立即使用按下的技能。" : "Use the action immediately after dismounted.", ref plugin.config.AutoDismountAndCast)) |
 
 						HelpCheckbox(cn ? "宏技能队列" : "Queue macro actions", cn ? "将用户宏中通过“/ac”指令施放的技能插入技能队列中。" : "Insert actions cast by \"/ac\" commands into action queue.", ref plugin.config.QueueMacroAction);
+						HelpCheckbox(cn ? "突进技能面向镜头" : "Move to camera direction", cn ? "在使用回避跳跃、前冲步、Hell's Ingress、Hell's Egress技能时使角色面向当前镜头方向。" : "Face to current camera direction when using En Avant, Elusive Jump, Hell's Ingress and Hell's Egress.", ref plugin.config.MoveToCameraDirection);
 
 					if (configChanged)
 					{
 						plugin.SavePluginConfig();
 					}
-					unsafe
-					{
-						ImGui.TextUnformatted($"{(long)plugin.actionManager:X}");
-						ShowObject(*plugin.actionManager);
-					}
+					//unsafe
+					//{
+					//	ImGui.TextUnformatted($"{(long)plugin.actionManager:X}");
+					//	ShowObject(*plugin.actionManager);
+					//}
 				}
 				 
 				ImGui.End();
@@ -72,7 +76,7 @@ namespace SmartCast
 					ImGui.TextColored(ImGuiColors.DalamudOrange,
 						string.Format("    {0}: {1:X}", (object)property.Name, property.GetValue(obj)));
 				}
-				catch (Exception e)
+				catch (Exception)
 				{
 					ImGui.TextColored(ImGuiColors.DalamudOrange,
 						string.Format("    {0}: {1}", (object)property.Name, property.GetValue(obj)));
@@ -89,7 +93,7 @@ namespace SmartCast
 					ImGui.TextColored(ImGuiColors.HealerGreen,
 						string.Format("    {0}: {1:X}", (object)field.Name, field.GetValue(obj)));
 				}
-				catch (Exception e)
+				catch (Exception)
 				{
 					ImGui.TextColored(ImGuiColors.HealerGreen,
 						string.Format("    {0}: {1}", (object)field.Name, field.GetValue(obj)));
